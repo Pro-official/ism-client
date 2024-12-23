@@ -1,11 +1,15 @@
 export interface Idea {
-  id: string;
+  _id: string;
   title: string;
-  description: string;
-  image: string;
-  author: {
-    name: string;
-    avatar: string;
-  };
-  date: Date;
+  content: string;
+  author: string;
+  category: string;
+  banner: string;
+  votes: number;
+  voters: string[];
+  status: string;
+  comments: string[];
+  createdAt: string;
+  updatedAt: string;
+  __v: number;
 }

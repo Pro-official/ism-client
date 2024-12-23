@@ -1,65 +1,68 @@
-import { useState } from "react";
+import { useState, useCallback } from "react";
 import { motion } from "framer-motion";
-import { ThumbsUp, ThumbsDown } from "lucide-react";
+import { Heart } from "lucide-react";
+import { useAuth } from "../../hooks/useAuth";
+import { useParams } from "react-router-dom";
 
 interface VoteButtonsProps {
-  initialUpvotes: number;
-  initialDownvotes: number;
-  onVote: (type: "up" | "down") => void;
+  initialVotes: number;
+  onVote: (type: "up" | null) => void;
 }
 
 export default function VoteButtons({
-  initialUpvotes,
-  initialDownvotes,
+  initialVotes,
   onVote,
 }: VoteButtonsProps) {
-  const [upvotes, setUpvotes] = useState(initialUpvotes);
-  const [downvotes, setDownvotes] = useState(initialDownvotes);
-  const [userVote, setUserVote] = useState<"up" | "down" | null>(null);
+  const { ideaId } = useParams<{ ideaId: string }>();
+  const [votes, setVotes] = useState(initialVotes);
+  const [userVote, setUserVote] = useState<boolean>(false);
+  const { user } = useAuth();
 
-  const handleVote = (type: "up" | "down") => {
-    if (userVote === type) {
-      setUserVote(null);
-      if (type === "up") setUpvotes((prev) => prev - 1);
-      else setDownvotes((prev) => prev - 1);
-    } else {
-      if (userVote) {
-        if (userVote === "up") setUpvotes((prev) => prev - 1);
-        else setDownvotes((prev) => prev - 1);
-      }
-      setUserVote(type);
-      if (type === "up") setUpvotes((prev) => prev + 1);
-      else setDownvotes((prev) => prev + 1);
+  const handleVote = useCallback(async () => {
+    if (!user) {
+      return console.error("User not authenticated.");
     }
-    onVote(type);
-  };
+    try {
+      const response = await fetch(
+        `http://localhost:3001/api/ideas/${ideaId}/vote`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            userId: user._id,
+          }),
+        }
+      );
+
+      if (!response.ok) {
+        const message = await response.text();
+        throw new Error(`HTTP error! Status: ${response.status}, ${message}`);
+      }
+
+      const data = await response.json();
+      setVotes(data.votes);
+      setUserVote(!userVote);
+      onVote(userVote ? null : "up");
+    } catch (error) {
+      console.error("Failed to vote on idea:", error);
+    }
+  }, [ideaId, onVote, user, userVote]);
 
   return (
     <div className="flex items-center gap-4">
       <motion.button
         whileTap={{ scale: 0.95 }}
-        onClick={() => handleVote("up")}
+        onClick={handleVote}
         className={`flex items-center gap-2 px-4 py-2 rounded-lg transition-colors ${
-          userVote === "up"
-            ? "bg-green-500/20 text-green-500"
-            : "bg-white/5 text-gray-400 hover:bg-white/10 hover:text-white"
-        }`}
-      >
-        <ThumbsUp className="w-5 h-5" />
-        <span>{upvotes}</span>
-      </motion.button>
-
-      <motion.button
-        whileTap={{ scale: 0.95 }}
-        onClick={() => handleVote("down")}
-        className={`flex items-center gap-2 px-4 py-2 rounded-lg transition-colors ${
-          userVote === "down"
+          userVote
             ? "bg-red-500/20 text-red-500"
             : "bg-white/5 text-gray-400 hover:bg-white/10 hover:text-white"
         }`}
       >
-        <ThumbsDown className="w-5 h-5" />
-        <span>{downvotes}</span>
+        <Heart className="w-5 h-5" />
+        <span>{votes}</span>
       </motion.button>
     </div>
   );

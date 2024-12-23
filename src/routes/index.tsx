@@ -17,7 +17,7 @@ export default function AppRoutes() {
         <Route index element={<HomePage />} />
         <Route path="share" element={<SharePage />} />
         <Route path="discover" element={<DiscoverPage />} />
-        <Route path="idea/:id" element={<IdeaPage />} />
+        <Route path="idea/:ideaId" element={<IdeaPage />} />
         <Route path="role-change" element={<RoleChangePage />} />
         <Route
           path="accept-collaboration"

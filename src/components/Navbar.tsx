@@ -6,7 +6,6 @@ export default function Navbar() {
   const location = useLocation();
   const navigate = useNavigate();
   const { user, logout } = useAuth();
-  console.log(user);
 
   const handleLogout = () => {
     logout();
@@ -30,21 +29,21 @@ export default function Navbar() {
                 to="/discover"
                 className={`${
                   location.pathname === "/discover"
-                    ? "text-white"
-                    : "text-gray-300"
+                    ? "text-white font-bold"
+                    : "text-gray-300 font-bold"
                 } hover:text-white transition-colors`}
               >
-                Discover
+                DISCOVER
               </Link>
               <Link
                 to="/share"
                 className={`${
                   location.pathname === "/share"
-                    ? "text-white"
-                    : "text-gray-300"
+                    ? "text-white font-bold"
+                    : "text-gray-300 font-bold"
                 } hover:text-white transition-colors`}
               >
-                Share
+                SHARE
               </Link>
             </div>
 
@@ -57,7 +56,7 @@ export default function Navbar() {
                   >
                     Logout
                   </button>
-                  <p className="text-white border-2 rounded-full p-2 bg-gradient-to-r from-purple-500 to-pink-500">
+                  <p className="text-white border-2 rounded-full px-2 py-1 bg-gradient-to-r from-purple-500 to-pink-500">
                     {user?.name
                       .split(" ")
                       .map((word) => word[0])

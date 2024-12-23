@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { useParams, Link } from "react-router-dom";
 import { motion } from "framer-motion";
 import { ArrowLeft, MessageCircle } from "lucide-react";
@@ -6,37 +6,106 @@ import { formatDistanceToNow } from "date-fns";
 import LoadingSpinner from "../components/share/LoadingSpinner";
 import VoteButtons from "../components/idea/VoteButtons";
 import CommentSection from "../components/idea/CommentSection";
-import { mockIdeas } from "../data/mock-ideas";
-import { Idea } from "../types/Idea";
 import StatusBadge from "../components/idea/StatusBadge";
+import { convertGoogleDriveLink } from "../utils/convertGoogleDriveLink";
+
+interface User {
+  _id: string;
+  name: string;
+  email: string;
+  role: string;
+}
+
+interface Comment {
+  _id: string;
+  commentBy: string;
+  comment: string;
+  commentor: string;
+}
+
+interface Idea {
+  _id: string;
+  title: string;
+  content: string;
+  author: string;
+  category: string;
+  banner: string;
+  votes: number;
+  voters: string[];
+  status: string;
+  comments: Comment[];
+  createdAt: string;
+  updatedAt: string;
+  __v: number;
+}
 
 export default function IdeaPage() {
-  const { id } = useParams();
+  const { ideaId } = useParams<{ ideaId: string }>();
   const [idea, setIdea] = useState<Idea | null>(null);
   const [loading, setLoading] = useState(true);
   const [showComments, setShowComments] = useState(false);
+  const [authorData, setAuthorData] = useState<User | undefined>(undefined);
+
+  const fetchIdea = useCallback(async () => {
+    setLoading(true);
+    try {
+      const response = await fetch(`http://localhost:3001/api/ideas/${ideaId}`);
+
+      if (!response.ok) {
+        const message = await response.text();
+        throw new Error(`HTTP error! Status: ${response.status}, ${message}`);
+      }
+      const data: Idea = await response.json();
+
+      setIdea(data);
+    } catch (error: unknown) {
+      console.error("Failed to fetch single idea", error);
+    } finally {
+      setLoading(false);
+    }
+  }, [ideaId]);
+
+  const fetchAuthor = useCallback(async () => {
+    try {
+      if (idea) {
+        const response = await fetch(
+          `http://localhost:3001/api/users/${idea.author}`
+        );
+
+        if (!response.ok) {
+          const message = await response.text();
+          throw new Error(`HTTP error! Status: ${response.status}, ${message}`);
+        }
+        const data = await response.json();
+        setAuthorData(data);
+      }
+    } catch (err: unknown) {
+      console.error("Failed to fetch author data", err);
+    }
+  }, [idea]);
 
   useEffect(() => {
-    // Simulate API call
-    const fetchIdea = async () => {
-      setLoading(true);
-      try {
-        // In a real app, this would be an API call
-        await new Promise((resolve) => setTimeout(resolve, 1500));
-        const foundIdea = mockIdeas?.find((idea) => idea?.id === id);
-        if (foundIdea) {
-          setIdea(foundIdea);
-        }
-      } finally {
-        setLoading(false);
-      }
-    };
-
     fetchIdea();
-  }, [id]);
+  }, [fetchIdea]);
+
+  useEffect(() => {
+    fetchAuthor();
+  }, [fetchAuthor]);
 
   if (loading) return <LoadingSpinner />;
-  if (!idea) return <div>Idea not found</div>;
+
+  if (!idea) {
+    return (
+      <motion.div
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        exit={{ opacity: 0 }}
+        className="min-h-screen pt-24 pb-12 flex items-center justify-center"
+      >
+        <div className="text-white text-center"> Idea not found. </div>
+      </motion.div>
+    );
+  }
 
   return (
     <motion.div
@@ -56,50 +125,48 @@ export default function IdeaPage() {
 
         <div className="rounded-2xl overflow-hidden bg-white/5 border border-white/10">
           <img
-            src={idea.image}
+            src={convertGoogleDriveLink(idea.banner)}
             alt={idea.title}
             className="w-full h-[400px] object-cover"
           />
 
           <div className="p-8">
             <div className="flex items-center justify-between mb-6">
-              <div className="flex items-center gap-4">
-                <img
-                  src={idea.author.avatar}
-                  alt={idea.author.name}
-                  className="w-12 h-12 rounded-full object-cover"
-                />
-                <div>
-                  <h3 className="font-medium text-white">{idea.author.name}</h3>
-                  <p className="text-sm text-gray-400">
-                    {formatDistanceToNow(idea.date, { addSuffix: true })}
+              {authorData && (
+                <div className="flex items-center gap-4">
+                  <p className="text-white text-xs border-2 rounded-full w-8 h-8 p-2 flex items-center justify-center bg-gradient-to-r from-purple-500 to-pink-500">
+                    {authorData?.name
+                      .split(" ")
+                      .map((word) => word[0])
+                      .join("")}
                   </p>
+                  <div>
+                    <h3 className="font-medium text-white">
+                      {authorData?.name}
+                    </h3>
+                    <p className="text-xs font-light text-gray-300">
+                      {idea.createdAt &&
+                        formatDistanceToNow(new Date(idea.createdAt), {
+                          addSuffix: true,
+                        })}
+                    </p>
+                  </div>
                 </div>
-              </div>
+              )}
               <div className="flex items-center gap-3">
                 <StatusBadge type="collaborate" />
                 <StatusBadge type="evaluating" />
               </div>
-              {/* <img
-                src={idea.author.avatar}
-                alt={idea.author.name}
-                className="w-12 h-12 rounded-full object-cover"
-              />
-              <div>
-                <h3 className="font-medium text-white">{idea.author.name}</h3>
-                <p className="text-sm text-gray-400">
-                  {formatDistanceToNow(idea.date, { addSuffix: true })}
-                </p>
-              </div> */}
             </div>
 
-            <h1 className="text-3xl font-bold text-white mb-4">{idea.title}</h1>
-            <p className="text-gray-300 mb-8">{idea.description}</p>
+            <h1 className="lg:text-2xl mb:text-xl font-bold text-white mb-4">
+              {idea.title}
+            </h1>
+            <p className="text-gray-300 mb-8">{idea.content}</p>
 
             <div className="flex items-center gap-4">
               <VoteButtons
-                initialUpvotes={150}
-                initialDownvotes={12}
+                initialVotes={idea.votes}
                 onVote={(type) => console.log("Voted:", type)}
               />
               <button
@@ -119,22 +186,7 @@ export default function IdeaPage() {
             animate={{ opacity: 1, y: 0 }}
             className="mt-8"
           >
-            <CommentSection
-              comments={[
-                {
-                  id: "1",
-                  author: {
-                    name: "Alex Thompson",
-                    avatar:
-                      "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?auto=format&fit=crop&q=80",
-                  },
-                  content:
-                    "This is a brilliant idea! I would love to see this implemented in my city.",
-                  date: new Date("2024-02-15"),
-                },
-              ]}
-              onAddComment={(content) => console.log("New comment:", content)}
-            />
+            <CommentSection comments={idea.comments} />
           </motion.div>
         )}
       </div>
