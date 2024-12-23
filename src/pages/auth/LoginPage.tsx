@@ -1,31 +1,28 @@
 import { useState } from "react";
-import { useNavigate, Link } from "react-router-dom";
+import { useNavigate, useLocation, Link } from "react-router-dom";
 import { motion } from "framer-motion";
-import { Mail, User, ArrowRight } from "lucide-react";
+import { Mail, Lock, LogIn } from "lucide-react";
+import { useAuth } from "../../hooks/useAuth";
 
-const roles = ["Employee", "Innovation manager", "Regional manager"];
-
-export default function RoleChangePage() {
+export default function LoginPage() {
   const [email, setEmail] = useState("");
-  const [role, setRole] = useState("");
+  const [password, setPassword] = useState("");
   const [error, setError] = useState("");
   const navigate = useNavigate();
+  const location = useLocation();
+  const { login } = useAuth();
+
+  const from = location.state?.from?.pathname || "/";
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError("");
 
-    // Dummy logic for role change
-    if (email && role) {
-      try {
-        // add logic here to call an api to change the role.
-        console.log("role changed");
-        navigate("/");
-      } catch (error) {
-        setError(`${error}, Failed to change role for ${email}`);
-      }
-    } else {
-      setError(`Please fill all the fields.`);
+    try {
+      await login(email, password);
+      navigate(from, { replace: true });
+    } catch (err) {
+      setError(`Invalid email or password, ${err}`);
     }
   };
 
@@ -39,8 +36,8 @@ export default function RoleChangePage() {
     >
       <div className="w-full max-w-md p-8 rounded-2xl bg-white/5 backdrop-blur-lg border border-white/10">
         <div className="text-center mb-8">
-          <h1 className="text-3xl font-bold text-white mb-2">Welcome Admin</h1>
-          <p className="text-gray-400">Change role of the user</p>
+          <h1 className="text-3xl font-bold text-white mb-2">Welcome Back</h1>
+          <p className="text-gray-400">Sign in to continue to IdeaShare</p>
         </div>
 
         {error && (
@@ -55,7 +52,7 @@ export default function RoleChangePage() {
               htmlFor="email"
               className="block text-sm font-medium text-gray-300 mb-2"
             >
-              User Email Address
+              Email Address
             </label>
             <div className="relative">
               <Mail className="absolute left-3 top-3 h-5 w-5 text-gray-400" />
@@ -65,44 +62,30 @@ export default function RoleChangePage() {
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 required
-                className="w-full pl-10 pr-4 py-2.5 rounded-lg bg-black/5 border border-white/10 text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-purple-500"
-                placeholder="Enter user email"
+                className="w-full pl-10 pr-4 py-2.5 rounded-lg bg-white/5 border border-white/10 text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-purple-500"
+                placeholder="Enter your email"
               />
             </div>
           </div>
 
           <div>
             <label
-              htmlFor="role"
+              htmlFor="password"
               className="block text-sm font-medium text-gray-300 mb-2"
             >
-              User Role
+              Password
             </label>
             <div className="relative">
-              <User className="absolute left-3 top-3 h-5 w-5 text-gray-400" />
-              <select
-                id="role"
-                value={role}
-                onChange={(e) => setRole(e.target.value)}
+              <Lock className="absolute left-3 top-3 h-5 w-5 text-gray-400" />
+              <input
+                id="password"
+                type="password"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
                 required
                 className="w-full pl-10 pr-4 py-2.5 rounded-lg bg-white/5 border border-white/10 text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-purple-500"
-              >
-                <option value="" disabled>
-                  Select a role
-                </option>
-                {roles.map((roleOption) => (
-                  <option
-                    style={{
-                      backgroundColor: "black",
-                      color: "white",
-                    }}
-                    key={roleOption}
-                    value={roleOption}
-                  >
-                    {roleOption}
-                  </option>
-                ))}
-              </select>
+                placeholder="Enter your password"
+              />
             </div>
           </div>
 
@@ -110,15 +93,18 @@ export default function RoleChangePage() {
             type="submit"
             className="w-full py-3 px-4 rounded-lg bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600 text-white font-medium transition-all flex items-center justify-center gap-2"
           >
-            <ArrowRight className="h-5 w-5" />
-            Change Role
+            <LogIn className="h-5 w-5" />
+            Sign In
           </button>
         </form>
 
         <p className="mt-6 text-center text-gray-400">
-          Back to Home?{" "}
-          <Link to="/" className="text-purple-400 hover:text-purple-300">
-            Go Home
+          Don't have an account?{" "}
+          <Link
+            to="/register"
+            className="text-purple-400 hover:text-purple-300"
+          >
+            Sign up
           </Link>
         </p>
       </div>
