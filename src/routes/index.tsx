@@ -4,7 +4,7 @@ import HomePage from "../pages/HomePage";
 import SharePage from "../pages/SharePage";
 import DiscoverPage from "../pages/DiscoverPage";
 import RoleChangePage from "../pages/RoleChangePage";
-import AcceptCollaborationPage from "../pages/AcceptCollaborationPage";
+import ManageCollaborationPage from "../pages/ManageCollaborationPage";
 import LoginPage from "../pages/auth/LoginPage";
 import RegisterPage from "../pages/auth/RegisterPage";
 import NotFoundPage from "../pages/NotFoundPage";
@@ -20,8 +20,8 @@ export default function AppRoutes() {
         <Route path="idea/:ideaId" element={<IdeaPage />} />
         <Route path="role-change" element={<RoleChangePage />} />
         <Route
-          path="accept-collaboration"
-          element={<AcceptCollaborationPage />}
+          path="collaboration/:ideaId"
+          element={<ManageCollaborationPage />}
         />
         <Route path="login" element={<LoginPage />} />
         <Route path="register" element={<RegisterPage />} />

@@ -1,7 +1,7 @@
 import { motion } from "framer-motion";
 import CollaborationTable from "../components/collaboration/CollaborationTable";
 
-export default function AcceptCollaborationPage() {
+export default function ManageCollaborationPage() {
   return (
     <motion.div
       initial={{ opacity: 0, y: 20 }}
@@ -11,9 +11,7 @@ export default function AcceptCollaborationPage() {
       className="container lg:max-w-7xl mx-auto px-4 pt-24 pb-12"
     >
       <div className="mb-8">
-        <h1 className="text-3xl font-bold text-white mb-2">
-          Collaboration Requests
-        </h1>
+        <h1 className="text-3xl font-bold text-white mb-2">Collaboration</h1>
         <p className="text-gray-400">
           Review and manage collaboration requests for your ideas
         </p>

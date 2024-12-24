@@ -2,6 +2,7 @@ import React, { useState, useCallback } from "react";
 import { motion } from "framer-motion";
 import { Users, Clock } from "lucide-react";
 import { useAuth } from "../../hooks/useAuth";
+import { useNavigate } from "react-router-dom";
 
 type StatusType =
   | "collaborate"
@@ -92,6 +93,7 @@ export default function StatusBadge({
   const [isModalOpen, setIsModalOpen] = useState(false);
   const { user } = useAuth();
   const [selectedStatus, setSelectedStatus] = useState<StatusType>(type);
+  const Navigate = useNavigate();
 
   const statusConfig: {
     [key in StatusType]: {
@@ -192,6 +194,7 @@ export default function StatusBadge({
           throw new Error(`HTTP error! Status: ${response.status}, ${message}`);
         }
         setIsModalOpen(false);
+        Navigate(`/collaboration/${ideaId}`);
       } catch (err) {
         console.error("Failed to send collaboration request.", err);
       }

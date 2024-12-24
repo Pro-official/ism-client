@@ -56,7 +56,8 @@ export default function Navbar() {
                   >
                     Logout
                   </button>
-                  <p className="text-white border-2 rounded-full px-2 py-1 bg-gradient-to-r from-purple-500 to-pink-500">
+
+                  <p className="text-white text-sm border-2 rounded-full w-10 h-10 p-2 flex items-center justify-center bg-gradient-to-r from-purple-500 to-pink-500">
                     {user?.name
                       .split(" ")
                       .map((word) => word[0])
@@ -79,7 +80,7 @@ export default function Navbar() {
                   </Link>
                 </>
               )}
-              {user?.role === "admin" && (
+              {user?.role === "Admin" && (
                 <Link
                   to="/role-change"
                   className="px-4 py-2 rounded-lg bg-white/5 hover:bg-white/10 text-white transition-all border border-white/10"

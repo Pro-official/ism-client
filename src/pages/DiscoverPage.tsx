@@ -12,7 +12,7 @@ interface IdeasResponse {
   totalPages: number;
 }
 
-const ITEMS_PER_PAGE = 2;
+const ITEMS_PER_PAGE = 12;
 
 export default function DiscoverPage() {
   const [ideas, setIdeas] = useState<Idea[]>([]);

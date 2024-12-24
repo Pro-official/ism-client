@@ -1,7 +1,7 @@
 import { useState, useEffect, useCallback } from "react";
 import { useParams, Link } from "react-router-dom";
 import { motion } from "framer-motion";
-import { ArrowLeft, MessageCircle } from "lucide-react";
+import { ArrowLeft, MessageCircle, Users } from "lucide-react";
 import { formatDistanceToNow } from "date-fns";
 import LoadingSpinner from "../components/share/LoadingSpinner";
 import VoteButtons from "../components/idea/VoteButtons";
@@ -165,8 +165,10 @@ export default function IdeaPage() {
             <h1 className="lg:text-2xl mb:text-xl font-bold text-white mb-4">
               {idea.title}
             </h1>
-            <p className="text-gray-300 mb-8">{idea.content}</p>
-
+            <div
+              className="text-gray-300 mb-8"
+              dangerouslySetInnerHTML={{ __html: idea.content }}
+            />
             <div className="flex items-center gap-4">
               <VoteButtons
                 initialVotes={idea.votes}
@@ -179,6 +181,12 @@ export default function IdeaPage() {
                 <MessageCircle className="w-5 h-5" />
                 <span>Comments</span>
               </button>
+              <Link to={`/collaboration/${idea._id}`}>
+                <button className="flex items-center gap-2 px-4 py-2 rounded-lg bg-white/5 text-gray-400 hover:bg-white/10 hover:text-white transition-colors">
+                  <Users className="w-5 h-5" />
+                  <span>See Collaboration</span>
+                </button>
+              </Link>
             </div>
           </div>
         </div>
