@@ -163,17 +163,26 @@ export default function CollaborationTable() {
     if (!user) {
       return console.error("User is not authenticated.");
     }
+
+    console.log(
+      JSON.stringify({
+        regionalUserId: user._id,
+        collaboratorEmail: collaborator.email,
+        newRole,
+      })
+    );
+
     try {
       const response = await fetch(
-        `http://localhost:3001/api/users/change-role`,
+        `http://localhost:3001/api/ideas/${ideaId}/assign-role`,
         {
           method: "PATCH",
           headers: {
             "Content-Type": "application/json",
           },
           body: JSON.stringify({
-            adminID: user._id,
-            userEmailToBeChanged: collaborator.email,
+            regionalUserId: user._id,
+            collaboratorEmail: collaborator.email,
             newRole,
           }),
         }
@@ -185,7 +194,7 @@ export default function CollaborationTable() {
     } catch (err) {
       console.error("Failed to change role", err);
     }
-
+    fetchCollaborators();
     setSelectedRole(null);
   };
 
@@ -295,7 +304,8 @@ export default function CollaborationTable() {
                     {user?.role === "Regional" ? (
                       <div className="flex gap-2 items-center">
                         <select
-                          value={selectedRole || collaborator.role}
+                          // value={selectedRole || collaborator.role}
+                          defaultValue={collaborator?.role}
                           onChange={(e) =>
                             setSelectedRole(
                               e.target.value as
@@ -307,7 +317,7 @@ export default function CollaborationTable() {
                                 | "Analyst"
                             )
                           }
-                          className="bg-white/5 rounded-md border border-white/10 py-1 px-2 text-white"
+                          className="bg-gray-600 rounded-md border border-white/10 py-1 px-2 text-white"
                         >
                           <option value="General">General</option>
                           <option value="Team Leader">Team Leader</option>

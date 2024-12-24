@@ -15,6 +15,8 @@ export default function AppRoutes() {
     <Routes>
       <Route path="/" element={<MainLayout />}>
         <Route index element={<HomePage />} />
+        <Route path="login" element={<LoginPage />} />
+        <Route path="register" element={<RegisterPage />} />
         <Route path="share" element={<SharePage />} />
         <Route path="discover" element={<DiscoverPage />} />
         <Route path="idea/:ideaId" element={<IdeaPage />} />
@@ -23,8 +25,6 @@ export default function AppRoutes() {
           path="collaboration/:ideaId"
           element={<ManageCollaborationPage />}
         />
-        <Route path="login" element={<LoginPage />} />
-        <Route path="register" element={<RegisterPage />} />
         <Route path="*" element={<NotFoundPage />} />
       </Route>
     </Routes>

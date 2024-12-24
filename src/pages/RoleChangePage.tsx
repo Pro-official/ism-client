@@ -13,6 +13,8 @@ export default function RoleChangePage() {
   const navigate = useNavigate();
   const { user } = useAuth();
 
+  if (!user) navigate("/login");
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError("");

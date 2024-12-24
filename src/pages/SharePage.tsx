@@ -1,4 +1,4 @@
-import React, { useState, useEffect, lazy, Suspense, useCallback } from "react";
+import { useState, useEffect, lazy, Suspense, useCallback } from "react";
 import { motion } from "framer-motion";
 import IdeaForm from "../components/share/IdeaForm";
 import PremiumCard from "../components/share/PremiumCard";
@@ -6,15 +6,18 @@ import TrendingTopics from "../components/share/TrendingTopics";
 import LoadingSpinner from "../components/share/LoadingSpinner";
 import { Idea } from "../types/Idea";
 import { useAuth } from "../hooks/useAuth";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 
 const IdeaPost = lazy(() => import("../components/share/IdeaPost"));
 
 export default function SharePage() {
   const { user } = useAuth();
+  const navigate = useNavigate();
   const [postedIdeas, setPostedIdeas] = useState<Idea[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+
+  if (!user) navigate("/login");
 
   const fetchMyIdeas = useCallback(async () => {
     setLoading(true);

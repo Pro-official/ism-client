@@ -1,7 +1,14 @@
 import { motion } from "framer-motion";
 import CollaborationTable from "../components/collaboration/CollaborationTable";
+import { useNavigate } from "react-router-dom";
+import { useAuth } from "../hooks/useAuth";
 
 export default function ManageCollaborationPage() {
+  const navigate = useNavigate();
+  const { user } = useAuth();
+
+  if (!user) navigate("/login");
+
   return (
     <motion.div
       initial={{ opacity: 0, y: 20 }}

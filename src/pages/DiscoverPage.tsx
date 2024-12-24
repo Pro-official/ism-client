@@ -4,6 +4,8 @@ import IdeaGrid from "../components/discover/IdeaGrid";
 import Pagination from "../components/discover/Pagination";
 import LoadingSpinner from "../components/share/LoadingSpinner";
 import { Idea } from "../types/Idea";
+import { useNavigate } from "react-router-dom";
+import { useAuth } from "../hooks/useAuth";
 
 interface IdeasResponse {
   ideas: Idea[];
@@ -20,6 +22,10 @@ export default function DiscoverPage() {
   const [totalPages, setTotalPages] = useState(1);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const navigate = useNavigate();
+  const { user } = useAuth();
+
+  if (!user) navigate("/login");
 
   const fetchIdeas = useCallback(async () => {
     setLoading(true);

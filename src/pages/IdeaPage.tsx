@@ -1,5 +1,5 @@
 import { useState, useEffect, useCallback } from "react";
-import { useParams, Link } from "react-router-dom";
+import { useParams, Link, useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
 import { ArrowLeft, MessageCircle, Users } from "lucide-react";
 import { formatDistanceToNow } from "date-fns";
@@ -25,7 +25,9 @@ export default function IdeaPage() {
   const [showComments, setShowComments] = useState(false);
   const [authorData, setAuthorData] = useState<User | undefined>(undefined);
   const { user } = useAuth();
-  console.log(user?.role, "in IdeaPage");
+  const navigate = useNavigate();
+
+  if (!user) navigate("/login");
 
   const fetchIdea = useCallback(async () => {
     setLoading(true);
