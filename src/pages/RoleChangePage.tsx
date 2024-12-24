@@ -2,30 +2,61 @@ import { useState } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import { motion } from "framer-motion";
 import { Mail, User, ArrowRight } from "lucide-react";
+import { useAuth } from "../hooks/useAuth";
 
-const roles = ["Employee", "Innovation manager", "Regional manager"];
+const roles = ["Employee", "Innovation", "Regional"];
 
 export default function RoleChangePage() {
   const [email, setEmail] = useState("");
   const [role, setRole] = useState("");
   const [error, setError] = useState("");
   const navigate = useNavigate();
+  const { user } = useAuth();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError("");
 
-    // Dummy logic for role change
-    if (email && role) {
-      try {
-        // add logic here to call an api to change the role.
-        console.log("role changed");
-        navigate("/");
-      } catch (error) {
-        setError(`${error}, Failed to change role for ${email}`);
-      }
-    } else {
+    if (!email || !role) {
       setError(`Please fill all the fields.`);
+      return;
+    }
+
+    try {
+      if (!user?._id) {
+        throw new Error("User is not authenticated.");
+      }
+      const response = await fetch(
+        `http://localhost:3001/api/users/change-role`,
+        {
+          method: "PATCH",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            userId: user._id,
+            userEmailToBeChanged: email,
+            newRole: role,
+          }),
+        }
+      );
+      if (!response.ok) {
+        const message = await response.text();
+        throw new Error(`HTTP error! Status: ${response.status}, ${message}`);
+      }
+
+      console.log("role changed");
+      navigate("/");
+    } catch (error: unknown) {
+      let errorMessage = `Failed to change role for ${email}`;
+      if (error instanceof Error) {
+        errorMessage = `${errorMessage}, ${error.message}`;
+      } else if (typeof error === "string") {
+        errorMessage = `${errorMessage}, ${error}`;
+      } else {
+        errorMessage = `${errorMessage}, ${JSON.stringify(error)}`;
+      }
+      setError(errorMessage);
     }
   };
 

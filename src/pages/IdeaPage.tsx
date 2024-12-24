@@ -8,6 +8,8 @@ import VoteButtons from "../components/idea/VoteButtons";
 import CommentSection from "../components/idea/CommentSection";
 import StatusBadge from "../components/idea/StatusBadge";
 import { convertGoogleDriveLink } from "../utils/convertGoogleDriveLink";
+import { Idea } from "../types/Idea";
+import { useAuth } from "../hooks/useAuth";
 
 interface User {
   _id: string;
@@ -16,35 +18,14 @@ interface User {
   role: string;
 }
 
-interface Comment {
-  _id: string;
-  commentBy: string;
-  comment: string;
-  commentor: string;
-}
-
-interface Idea {
-  _id: string;
-  title: string;
-  content: string;
-  author: string;
-  category: string;
-  banner: string;
-  votes: number;
-  voters: string[];
-  status: string;
-  comments: Comment[];
-  createdAt: string;
-  updatedAt: string;
-  __v: number;
-}
-
 export default function IdeaPage() {
   const { ideaId } = useParams<{ ideaId: string }>();
   const [idea, setIdea] = useState<Idea | null>(null);
   const [loading, setLoading] = useState(true);
   const [showComments, setShowComments] = useState(false);
   const [authorData, setAuthorData] = useState<User | undefined>(undefined);
+  const { user } = useAuth();
+  console.log(user?.role, "in IdeaPage");
 
   const fetchIdea = useCallback(async () => {
     setLoading(true);
@@ -107,6 +88,14 @@ export default function IdeaPage() {
     );
   }
 
+  const handleStatusChange = (
+    newStatus: "Idea Pending" | "Idea in Progress" | "Idea Evaluated"
+  ) => {
+    if (idea) {
+      setIdea({ ...idea, status: newStatus });
+    }
+  };
+
   return (
     <motion.div
       initial={{ opacity: 0 }}
@@ -154,8 +143,22 @@ export default function IdeaPage() {
                 </div>
               )}
               <div className="flex items-center gap-3">
-                <StatusBadge type="collaborate" />
-                <StatusBadge type="evaluating" />
+                {user?.role !== "Employee" && (
+                  <StatusBadge
+                    ideaName={idea?.title}
+                    ideaId={idea._id}
+                    type="collaborate"
+                    onStatusChange={handleStatusChange}
+                  />
+                )}
+                {user?.role === "Innovation" && (
+                  <StatusBadge
+                    ideaName={idea?.title}
+                    ideaId={idea._id}
+                    type={idea.status}
+                    onStatusChange={handleStatusChange}
+                  />
+                )}
               </div>
             </div>
 

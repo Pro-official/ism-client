@@ -1,5 +1,5 @@
-import { motion } from 'framer-motion';
-import CollaborationTable from '../components/collaboration/CollaborationTable';
+import { motion } from "framer-motion";
+import CollaborationTable from "../components/collaboration/CollaborationTable";
 
 export default function AcceptCollaborationPage() {
   return (
@@ -8,11 +8,15 @@ export default function AcceptCollaborationPage() {
       animate={{ opacity: 1, y: 0 }}
       exit={{ opacity: 0 }}
       transition={{ duration: 0.5 }}
-      className="container mx-auto px-4 pt-24 pb-12"
+      className="container lg:max-w-7xl mx-auto px-4 pt-24 pb-12"
     >
       <div className="mb-8">
-        <h1 className="text-3xl font-bold text-white mb-2">Collaboration Requests</h1>
-        <p className="text-gray-400">Review and manage collaboration requests for your ideas</p>
+        <h1 className="text-3xl font-bold text-white mb-2">
+          Collaboration Requests
+        </h1>
+        <p className="text-gray-400">
+          Review and manage collaboration requests for your ideas
+        </p>
       </div>
 
       <div className="bg-white/5 backdrop-blur-lg rounded-2xl border border-white/10 p-6">
