@@ -32,7 +32,9 @@ export default function IdeaPage() {
   const fetchIdea = useCallback(async () => {
     setLoading(true);
     try {
-      const response = await fetch(`http://localhost:3001/api/ideas/${ideaId}`);
+      const response = await fetch(
+        `https://ism-server.onrender.com/api/ideas/${ideaId}`
+      );
 
       if (!response.ok) {
         const message = await response.text();
@@ -52,7 +54,7 @@ export default function IdeaPage() {
     try {
       if (idea) {
         const response = await fetch(
-          `http://localhost:3001/api/users/${idea.author}`
+          `https://ism-server.onrender.com/api/users/${idea.author}`
         );
 
         if (!response.ok) {

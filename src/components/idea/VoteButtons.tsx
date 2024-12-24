@@ -24,7 +24,7 @@ export default function VoteButtons({
     }
     try {
       const response = await fetch(
-        `http://localhost:3001/api/ideas/${ideaId}/vote`,
+        `https://ism-server.onrender.com/api/ideas/${ideaId}/vote`,
         {
           method: "POST",
           headers: {

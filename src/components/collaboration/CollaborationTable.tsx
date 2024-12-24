@@ -113,7 +113,7 @@ export default function CollaborationTable() {
       }
 
       const response = await fetch(
-        `http://localhost:3001/api/ideas/${ideaId}/collaborators`
+        `https://ism-server.onrender.com/api/ideas/${ideaId}/collaborators`
       );
       if (!response.ok) {
         const message = await response.text();
@@ -174,7 +174,7 @@ export default function CollaborationTable() {
 
     try {
       const response = await fetch(
-        `http://localhost:3001/api/ideas/${ideaId}/assign-role`,
+        `https://ism-server.onrender.com/api/ideas/${ideaId}/assign-role`,
         {
           method: "PATCH",
           headers: {
@@ -202,7 +202,7 @@ export default function CollaborationTable() {
     if (selectedCollaborator && action && user) {
       try {
         const response = await fetch(
-          `http://localhost:3001/api/ideas/${ideaId}/collaborators`,
+          `https://ism-server.onrender.com/api/ideas/${ideaId}/collaborators`,
           {
             method: "PATCH",
             headers: {

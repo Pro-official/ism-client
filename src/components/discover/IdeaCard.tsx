@@ -20,7 +20,9 @@ export default function IdeaCard({
 
   const fetchUser = useCallback(async () => {
     try {
-      const response = await fetch(`http://localhost:3001/api/users/${author}`);
+      const response = await fetch(
+        `https://ism-server.onrender.com/api/users/${author}`
+      );
 
       if (!response.ok) {
         const message = await response.text();
